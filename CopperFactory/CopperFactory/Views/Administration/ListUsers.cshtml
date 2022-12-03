@@ -1,0 +1,177 @@
+﻿@*@model IEnumerable<ApplicationUser>*@
+
+@*@model PaginatedList<Task<Users_in_Role_ViewModel>>*@
+@model IEnumerable<Task<Users_in_Role_ViewModel>>
+@{
+    ViewBag.Title = "All Users";
+}
+
+<link href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
+<style>
+    tfoot input {
+        width: 100%;
+        padding: 3px;
+        box-sizing: border-box;
+    }
+</style>
+<div class="row mr-0">
+    <div class="col-sm-6">
+        <h3 class="ml-2">All Users</h3>
+    </div>
+  
+        <div class="col-sm-6 text-right mr-0">
+            <a asp-action="ListRoles" asp-controller="Administration"
+           class="btn btn-dark mb-3 ml-auto" style="width:auto">
+                Manage Roles & Permissions
+            </a>
+        </div>
+    
+</div>
+
+
+
+    <a asp-action="Register" asp-controller="Account"
+   class="btn btn-primary mb-3 ml-3" style="width:auto">
+        Add New User
+    </a>
+
+@*<form asp-action="ListUsers" method="get">
+    <div class="form-actions row mr-0 ml-2">
+
+        <div class="col-sm-12">
+            <div class="input-group">
+                <div class="col-sm-12 row">
+                    <div class="input-group col-md-5">
+                        <input type="search" class="form-control rounded" placeholder="Search By UserName" aria-label="Search"
+                               aria-describedby="search-addon" name="SearchString" value="@ViewData["CurrentFilter"]" />
+                    </div>
+                    <div class="input-group col-md-5">
+                        <input type="search" class="form-control ml-2 rounded" placeholder="Search By FirstName" aria-label="Search"
+                               aria-describedby="search-addon" name="SearchString2" value="@ViewData["CurrentFilter2"]" />
+
+
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary">Search</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <a asp-action="ListUsers">Back To All List</a>
+        </div>
+    </div>
+
+</form>*@
+<hr />
+<div class="table-responsive bg-white">
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th style="text-align:center">
+                    UserName
+                </th>
+                <th style="text-align:center">
+                    FirstName
+                </th>
+                <th style="text-align:center">
+                    Email
+                </th>
+                <th style="text-align:center">
+                    Role
+                </th>
+            
+                    <th>
+                        Edit
+                    </th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td style="text-align:center">
+                        @user.Result.Username
+                    </td>
+                    <td style="text-align:center">
+                        @user.Result.FirstName
+                    </td>
+                    <td style="text-align:center">
+                        @user.Result.Email
+                    </td>
+                    <td style="text-align:center">
+                        @user.Result.Role
+
+                    </td>
+                 
+                        <td>
+                            <a asp-action="EditUser" asp-controller="Administration"
+                       asp-route-id="@user.Result.UserId" class="btn btn-primary">Edit</a>
+                        </td>
+                    
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th style="text-align:center">UserName</th>
+                <th style="text-align:center">FirstName</th>
+                <th style="text-align:center">Email</th>
+                <th style="text-align:center">Role</th>
+             
+                    <th style="display:none">
+                        Edit
+                    </th>
+                
+
+
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Setup - add a text input to each footer cell
+            $('#example tfoot th').each(function () {
+                var title = $(this).text();
+                $(this).html('<input type="text" style="text-align:center" placeholder="Search ' + title + '" />');
+            });
+
+            // DataTable
+            var table = $('#example').DataTable({
+                initComplete: function () {
+                    var r = $('#example tfoot tr');
+                    r.find('th').each(function () {
+                        $(this).css('padding', 8);
+                    });
+                    $('#example thead').append(r);
+                    $('#search_0').css('text-align', 'center');
+                    // Apply the search
+                    this.api().columns().every(function () {
+                        var that = this;
+
+                        $('input', this.footer()).on('keyup change clear', function () {
+                            if (that.search() !== this.value) {
+                                that
+                                    .search(this.value)
+                                    .draw();
+                            }
+                        });
+                    });
+
+                }
+            });
+
+
+        });
+    </script>
+}
